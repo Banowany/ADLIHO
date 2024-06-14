@@ -1,23 +1,25 @@
 package org.example.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.List;
-
-@Entity(name = "EventTable")
-public class Event {
+@Entity(name = "UserTable")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> users;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    @JsonIgnore
+    private Event event;
 
-    public Event() {
+    public User() {
     }
 
-    public Event(String name) {
+    public User(String name, Event event) {
         this.name = name;
+        this.event = event;
     }
 
     public Long getId() {
@@ -36,11 +38,11 @@ public class Event {
         this.name = name;
     }
 
-    public List<User> getUsers() {
-        return users;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 }
