@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Modal from "react-modal";
 
 const EventDetails = () => {
@@ -43,7 +43,8 @@ const EventDetails = () => {
             <ul>
                 {event.users && event.users.map(user => (
                     <li key={user.id}>
-                        {user.name}
+                        <Link to={`/event/${id}/user/${user.id}`}>{user.name}</Link>
+                        {/* {user.name} */}
                     </li>
                 ))}
             </ul>

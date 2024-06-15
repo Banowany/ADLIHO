@@ -22,6 +22,12 @@ public class UserController {
         this.eventRepository = eventRepository;
     }
 
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+
     @PostMapping
     public User createUser(@PathVariable Long eventId, @RequestBody UserCreateData userCreateData) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
