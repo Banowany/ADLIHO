@@ -1,6 +1,7 @@
 package org.example.backend.controllers;
 
 import org.example.backend.models.Event;
+import org.example.backend.models.EventCreateData;
 import org.example.backend.models.User;
 import org.example.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,21 +33,8 @@ public class EventController {
     }
 
     @PostMapping
-    public Event createEvent(@RequestBody String eventName) {
-        Event event = new Event(eventName);
-        return eventRepository.save(event);
-    }
-
-    @PutMapping("/{id}/users")
-    public Event addUserToEvent(@PathVariable Long id, @RequestBody String userName) {
-        Optional<Event> eventOptional = eventRepository.findById(id);
-        if (eventOptional.isEmpty()) {
-            throw new RuntimeException("Event not found");
-        }
-        Event event = eventOptional.get();
-        User user = new User(userName, event);
-        userRepository.save(user);
-        event.getUsers().add(user);
+    public Event createEvent(@RequestBody EventCreateData eventCreateData) {
+        Event event = new Event(eventCreateData.getName());
         return eventRepository.save(event);
     }
 }
