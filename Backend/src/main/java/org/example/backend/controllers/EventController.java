@@ -4,6 +4,7 @@ import org.example.backend.models.Event;
 import org.example.backend.models.EventCreateData;
 import org.example.backend.models.User;
 import org.example.backend.repositories.UserRepository;
+import org.example.backend.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,28 +14,25 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
-    private final org.example.backend.repositories.EventRepository eventRepository;
-    private final UserRepository userRepository;
+    private final EventService eventService;
 
     @Autowired
-    public EventController(org.example.backend.repositories.EventRepository eventRepository, UserRepository userRepository) {
-        this.eventRepository = eventRepository;
-        this.userRepository = userRepository;
+    public EventController(EventService eventService) {
+        this.eventService = eventService;
     }
 
     @GetMapping
     public List<Event> getEvents() {
-        return eventRepository.findAll();
+        return eventService.getEvents();
     }
 
     @GetMapping("/{id}")
     public Event getEvent(@PathVariable Long id) {
-        return eventRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found"));
+        return eventService.getEvent(id);
     }
 
     @PostMapping
     public Event createEvent(@RequestBody EventCreateData eventCreateData) {
-        Event event = new Event(eventCreateData.getName());
-        return eventRepository.save(event);
+        return eventService.createEvent(eventCreateData.getName());
     }
 }
