@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const EventList = () => {
     const [events, setEvents] = useState([]);
@@ -14,15 +15,21 @@ const EventList = () => {
             });
     }, []);
 
+    if (!events) return <div>Loading...</div>;
+
     return (
         <div>
             <h1>Event List</h1>
             <ul>
-                {events.map(task => (
+            {events.map(task => (
+                task.id ? (
                     <li key={task.id}>
-                        {task.name}
+                        <Link to={`/event/${task.id}`}>
+                            {task.name}
+                        </Link>
                     </li>
-                ))}
+                ) : null
+            ))}
             </ul>
         </div>
     );
