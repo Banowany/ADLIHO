@@ -3,6 +3,8 @@ package org.example.backend.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity(name = "UserTable")
 public class User {
     @Id
@@ -13,6 +15,8 @@ public class User {
     @JoinColumn(name = "event_id")
     @JsonIgnore
     private Event event;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Expense> expenses;
 
     public User() {
     }
@@ -44,5 +48,13 @@ public class User {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    public List<Expense> getExpenses() {
+        return expenses;
+    }
+
+    public void setExpenses(List<Expense> expenses) {
+        this.expenses = expenses;
     }
 }
