@@ -43,4 +43,8 @@ public class Event {
     public void setUsers(List<User> users) {
         this.users = users;
     }
+
+    public double getTotalExpenses() {
+        return users.stream().mapToDouble(user -> user.getExpenses().stream().mapToDouble(Expense::getAmount).sum()).sum();
+    }
 }

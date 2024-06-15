@@ -1,12 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Modal from "react-modal";
 
 const EventDetails = () => {
     const {id} = useParams();
     const [event, setEvent] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const navigate = useNavigate();
 
     const handleGetEvent = () => {
         axios.get(`http://localhost:8080/api/events/${id}`)
@@ -59,6 +60,7 @@ const EventDetails = () => {
                     <button>Add</button>
                 </form>
             </Modal>
+            <button onClick={() => navigate(`/event/${id}/report`)}>Generate Report</button>
         </div>
     );
 };

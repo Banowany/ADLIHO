@@ -57,4 +57,8 @@ public class User {
     public void setExpenses(List<Expense> expenses) {
         this.expenses = expenses;
     }
+
+    public double getTotalExpenses() {
+        return expenses.stream().mapToDouble(Expense::getAmount).sum();
+    }
 }
