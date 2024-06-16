@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import Modal from "react-modal";
+import { useParams, useNavigate } from "react-router-dom";
+// import Modal from "react-modal";
+import { Breadcrumb, Button, Modal, Table } from "react-bootstrap";
 
 const EventDetails = () => {
     const {id} = useParams();
@@ -10,13 +11,23 @@ const EventDetails = () => {
     const navigate = useNavigate();
 
     const handleGetEvent = () => {
-        axios.get(`http://localhost:8080/api/events/${id}`)
-            .then(res => {
-                setEvent(res.data);
+        fetch(`http://localhost:8080/api/events/${id}`)
+            .then(response => {
+                return response.json();
             })
-            .catch(err => {
-                console.error('There was an error fetching the event!', err);
+            .then(data => {
+                setEvent(data);
             })
+            .catch(error => {
+                console.error('There was an error fetching the event!', error);
+            });
+        // axios.get(`http://localhost:8080/api/events/${id}`)
+        //     .then(res => {
+        //         setEvent(res.data);
+        //     })
+        //     .catch(err => {
+        //         console.error('There was an error fetching the event!', err);
+        //     })
     };
 
     useEffect(handleGetEvent, [id]);
@@ -25,42 +36,89 @@ const EventDetails = () => {
     
     const handleAddUser = (event) => {
         event.preventDefault();
-        axios.post(`http://localhost:8080/api/events/${id}/users`, {
-            name: event.target[0].value
+        fetch(`http://localhost:8080/api/events/${id}/users`, {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: event.target[0].value
+            })
         })
-            .then(res => {
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
                 handleGetEvent();
                 setModalIsOpen(false);
             })
-            .catch(err => {
-                console.error('There was an error adding the user!', err);
+            .catch(error => {
+                console.error('There was an error adding the user!', error);
             });
+        // axios.post(`http://localhost:8080/api/events/${id}/users`, {
+        //     name: event.target[0].value
+        // })
+        //     .then(res => {
+        //         handleGetEvent();
+        //         setModalIsOpen(false);
+        //     })
+        //     .catch(err => {
+        //         console.error('There was an error adding the user!', err);
+        //     });
     };
 
     return (
         <div>
-            <h1>{event.name}</h1>
+            <Breadcrumb>
+                <Breadcrumb.Item href="/">Event List</Breadcrumb.Item>
+                <Breadcrumb.Item active>Event Details</Breadcrumb.Item>
+            </Breadcrumb>
+            <h1>Event: <span className="text-info">{event.name}</span></h1>
             <h2>Assigned Users:</h2>
-            <ul>
-                {event.users && event.users.map(user => (
-                    <li key={user.id}>
-                        <Link to={`/event/${id}/user/${user.id}`}>{user.name}</Link>
-                        {/* {user.name} */}
-                    </li>
-                ))}
-            </ul>
-            <button onClick={() => setModalIsOpen(true)}>Add User</button>
-            <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}>
-                <h2>Add User</h2>
-                <form onSubmit={handleAddUser}>
-                    <label>
-                        Name:
-                        <input type="text" />
-                    </label>
-                    <button>Add</button>
-                </form>
+            {event.users.length === 0 && <p>No users assigned</p>}
+            <Table bordered hover>
+                <tbody>
+                    {event.users && event.users.map(user => (
+                        <tr 
+                            key={user.id} 
+                            onClick={() => navigate(`/event/${id}/user/${user.id}`)}
+                            style={{
+                                cursor: 'pointer'
+                            }}
+                        >
+                            <td>
+                                {user.name}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+            <Button 
+                variant="primary" 
+                style={{
+                        marginRight: '.5rem'
+                    }} 
+                onClick={() => setModalIsOpen(true)}
+            >
+                Add User
+            </Button>
+            <Modal show={modalIsOpen} onHide={() => setModalIsOpen(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Add User</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form id="addUserForm" onSubmit={handleAddUser}>
+                        <label>
+                            Username:
+                            <input type="text" />
+                        </label>
+                    </form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" type="submit" form="addUserForm">Close</Button>
+                </Modal.Footer>
             </Modal>
-            <button onClick={() => navigate(`/event/${id}/report`)}>Generate Report</button>
+            <Button variant="primary" onClick={() => navigate(`/event/${id}/report`)}>Generate Report</Button>
         </div>
     );
 };
